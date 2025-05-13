@@ -3,20 +3,15 @@ import fs from "fs/promises";
 import { createTestApp, TestApplication } from "./utils/bootstrap";
 import path from "path";
 
-describe("File API (E2E)", () => {
+describe("File API", () => {
   let testApp: TestApplication;
 
-  const TEST_STORAGE_PATH = process.env.FILE_STORAGE_PATH || "./test-uploads";
-
   beforeAll(async () => {
-    await fs.rm(TEST_STORAGE_PATH, { recursive: true, force: true }); // Clear previous runs
-    await fs.mkdir(TEST_STORAGE_PATH, { recursive: true });
-
-    testApp = await createTestApp({ uploadDir: "./test-uploads" });
+    testApp = createTestApp();
   });
 
   afterAll(async () => {
-    await testApp?.close();
+    testApp.close();
   });
 
   it("returns 404 for a non-existent file", async () => {
@@ -36,7 +31,7 @@ describe("File API (E2E)", () => {
     const response = await request(testApp.server)
       .post("/upload")
       .attach("imageFile", fileBuffer, {
-        filename: "test-given.webp",
+        filename: "test-given.png",
         contentType: "image/png",
       });
 

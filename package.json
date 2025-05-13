@@ -26,6 +26,6 @@
     "start": "node dist/server.js",
     "dev": "ts-node-dev -r tsconfig-paths/register --watch src,views,.env --respawn --transpile-only src/server.ts",
     "clean": "rimraf dist storage",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "NODE_ENV=test jest --config ./test/jest-e2e.json"
   }
 }

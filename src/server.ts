@@ -2,8 +2,9 @@ import config from "@config/index";
 import app from "./app";
 import { logger } from "@utils/logger";
 import { fileService } from "@services/file.service";
+import fs from "fs/promises";
 
-const server = app.listen(config.port, () => {
+const server = app.listen(config.port, async () => {
   logger.info(`Environment: ${config.env}`);
   logger.info(`Server running on port: ${config.port}`);
   logger.info(`Storage (uploads) directory: ${config.uploadDir}`);
@@ -11,14 +12,18 @@ const server = app.listen(config.port, () => {
   logger.info(`Link expiry time: ${config.linkExpiryMinutes}min`);
   logger.info(`Allowed mime types: ${config.allowedMimeTypes}`);
   logger.info(`Cleanup interval: ${config.cleanupIntervalSeconds}s`);
+  await fs.mkdir(config.uploadDir, { recursive: true });
+  logger.info(`Initialized storage`);
 });
 
 // graceful shutdown handling
 const signals: NodeJS.Signals[] = ["SIGINT", "SIGTERM"];
 
 signals.forEach((signal) => {
-  process.on(signal, () => {
+  process.on(signal, async () => {
     logger.warn(`Received ${signal}. Shutting down gracefully...`);
+
+    await fs.rm(config.uploadDir, { recursive: true, force: true });
     fileService.stopPeriodicCleanup(); // stop background tasks
 
     server.close((err) => {
