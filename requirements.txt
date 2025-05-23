@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+python-multipart
+python-dotenv
+pydantic[email] # For settings validation, email type might be useful later
+pydantic-settings # For src/config.py
+pytest
+httpx
